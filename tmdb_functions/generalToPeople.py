@@ -1,14 +1,19 @@
+import json
 
-def generalToPeople(general):
+def generalToPeople(general, img_path):
+
+    general = json.loads(general)
+    general = general["results"][0]
 
     known_for = []
     for obj in general["known_for"]:
-        known_for.append(obj["original_title"])
-
+        if "title" in obj.keys():
+            known_for.append(obj["title"])
+    
     data = {
         "id": general["id"],
         "name": general["name"],
-        "image": general["profile_path"],
+        "image": img_path + general["profile_path"],
         "popularity": general["popularity"],
         "known_for": known_for
     }
