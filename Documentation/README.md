@@ -1,3 +1,12 @@
+
+# Bot documentation
+## Inline mode
+  Inline bots: Users can interact with your bot via inline queries straight from the text input field in any chat. All they     need to do is start a message with your bot's username and then type a query.
+
+```javascript  
+  /command
+```
+
 # Controller documentation for the Bot
 
 - /actor/{name}
@@ -78,11 +87,4 @@ Respuesta:
 - /reception/serie/{name}
 - /reception/short/{name}
 
-# Bot documentation
-## Inline mode
-  Inline bots: Users can interact with your bot via inline queries straight from the text input field in any chat. All they     need to do is start a message with your bot's username and then type a query.
-
-```javascript  
-  /command
-```
   
