@@ -1,5 +1,5 @@
 # MovieGram
-A bot on telegram to recommend movies, using The Movie DB
+A bot on telegram to recommend movies and help cinephiles, using The Movie DB
 
 ## Start
 <p align="center">
