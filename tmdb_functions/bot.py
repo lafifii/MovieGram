@@ -9,6 +9,7 @@ CHOOSING, TYPING_REPLY, TYPING_CHOICE = range(3)
 
 class MovieGramBot():
     def __init__(self):
+        // no nos hackeen porfi
         self.token_ = '857019165:AAHkHPXfVU-iw6yb7EP5GOtQzXz4LJ8h03k'
         logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                             level=logging.INFO)
