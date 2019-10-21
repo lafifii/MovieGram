@@ -1,5 +1,5 @@
 import logging
-from tmdb import getMovie
+from tmdb import getMovie, getSerie
 from telegram import ReplyKeyboardMarkup
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters,
                           ConversationHandler)
@@ -49,7 +49,7 @@ class MovieGramBot():
             msj += js['title'] + ": " + js["overview"]
             ph = js['image']
         elif(category == 'Serie'):
-            js = getMovie(text)
+            js = getSerie(text)
             msj += js['title'] + ": " + js["overview"]
             ph = js['image']
         update.message.reply_text(msj, reply_markup=self.markup)
