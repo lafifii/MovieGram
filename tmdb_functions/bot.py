@@ -41,7 +41,7 @@ class MovieGramBot():
         text = update.message.text
         category = user_data['choice']
         del user_data['choice']
-        ph = 'https://indiehoy.com/noticias/nicolas-cage-detesta-profundamente-los-memes-cara/'
+        ph = 'https://indiehoy.com/wp-content/uploads/2018/09/nicolas-cage-meme-640x434.jpg'
         msj = 'Genial! Entonces buscas la ' + category + \
             ' llamada ' + text + '...Encontré esto:\n'
         text = text.replace(' ', '+')
