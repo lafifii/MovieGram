@@ -54,7 +54,7 @@ class MovieGramBot():
             ph = js['image']
         elif(category == 'Celebridad'):
             js = getPeople(text)
-            msj += js['name'] + ", Popularidad: " + js["popularity"]
+            msj += js['name'] + ", Popularidad: " + str(js["popularity"])
             ph = js['image']
 
         update.message.reply_text(msj, reply_markup=self.markup)
