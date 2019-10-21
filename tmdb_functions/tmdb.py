@@ -15,6 +15,9 @@ language = "es-PE" # "en-US"
 api_key = "a52e5d45825556b239d085e464958814"
 payload = "{}"
 
+def printJson(data):
+    print(json.dumps(data, indent=4, sort_keys=True))
+
 def GET(path):
 
     conn.request("GET", path, payload)
@@ -92,7 +95,7 @@ def getTrendDirectors():
         data["results"].append(directors)
     
     return data
-print(json.dumps(getTrendDirectors(), indent=4, sort_keys=True))
+# print(json.dumps(getTrendDirectors(), indent=4, sort_keys=True))
 
 # - /trends/series
 def getTrendSeries():
