@@ -1,5 +1,5 @@
 import logging
-
+from tmdb import getMovie
 from telegram import ReplyKeyboardMarkup
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters,
                           ConversationHandler)
@@ -42,6 +42,8 @@ class MovieGramBot():
         category = user_data['choice']
         del user_data['choice']
         msj = 'Genial! Entonces buscas la ' + category + ' llamada ' + text
+        text = text.replace(' ', '+')
+        print(getMovie(text))
         update.message.reply_text(msj, reply_markup=self.markup)
         return CHOOSING
 
