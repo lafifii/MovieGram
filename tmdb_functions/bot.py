@@ -1,5 +1,5 @@
 import logging
-from tmdb import getMovie, getSerie
+from tmdb import getMovie, getSerie, getPeople
 from telegram import ReplyKeyboardMarkup
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters,
                           ConversationHandler)
@@ -52,6 +52,11 @@ class MovieGramBot():
             js = getSerie(text)
             msj += js['title'] + ": " + js["overview"]
             ph = js['image']
+        elif(category == 'Celebridad'):
+            js = getPeople(text)
+            msj += js['name'] + ", Popularidad: " + js["popularity"]
+            ph = js['image']
+
         update.message.reply_text(msj, reply_markup=self.markup)
         update.message.reply_text(ph)
         return CHOOSING
