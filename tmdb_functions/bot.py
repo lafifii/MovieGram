@@ -41,22 +41,27 @@ class MovieGramBot():
         text = update.message.text
         category = user_data['choice']
         del user_data['choice']
+        ph = 'https://indiehoy.com/noticias/nicolas-cage-detesta-profundamente-los-memes-cara/'
         msj = 'Genial! Entonces buscas la ' + category + \
             ' llamada ' + text + '...Encontré esto:\n'
         text = text.replace(' ', '+')
         if(category == 'Pelicula'):
             js = getMovie(text)
-            msj += js['title'] + ": " + js["overview"]
-            ph = js['image']
+            if(js != None):
+                msj += js['title'] + ": " + js["overview"]
+                ph = js['image']
         elif(category == 'Serie'):
             js = getSerie(text)
-            msj += js['title'] + ": " + js["overview"]
-            ph = js['image']
+            if(js != None):
+                msj += js['title'] + ": " + js["overview"]
+                ph = js['image']
         elif(category == 'Celebridad'):
             js = getPeople(text)
-            msj += js['name'] + ", Popularidad: " + str(js["popularity"])
-            ph = js['image']
-
+            if(js != None):
+                msj += js['name'] + ", Popularidad: " + str(js["popularity"])
+                ph = js['image']
+        if(js == None):
+            msj = 'No se encontro nada'
         update.message.reply_text(msj, reply_markup=self.markup)
         update.message.reply_text(ph)
         return CHOOSING
