@@ -38,10 +38,12 @@ def getPeople(name):
     path += "&language=" + language + "&query=" + name
     path += "&page=1&include_adult=true"
 
-    data = GET(path)
-    data = generalToPeople(data, img_path)
-
-    return data
+    try:
+        data = GET(path)
+        data = generalToPeople(data, img_path)
+        return data
+    except:
+        return None
 
 
 getDirector = getActor = getPeople
@@ -56,10 +58,13 @@ def getSerie(name):
     path = "/3/search/tv?api_key=" + api_key
     path += "&language=" + language + "&query=" + name + "&page=1"
 
-    data = GET(path)
-    data = generalToSerie(data, img_path)
+    try:
+        data = GET(path)
+        data = generalToSerie(data, img_path)
+        return data
+    except:
+        return None
 
-    return data
 # print(json.dumps(getSerie("bob esponja"), indent=4, sort_keys=True))
 
 # - /movie/{name}
@@ -68,11 +73,12 @@ def getSerie(name):
 def getMovie(name):
     path = "/3/search/movie?api_key=" + api_key
     path += "&language=" + language + "&query=" + name
-
-    data = GET(path)
-    data = generalToMovie(data, img_path)
-
-    return data
+    try:
+        data = GET(path)
+        data = generalToMovie(data, img_path)
+        return data
+    except:
+        return None
 # print(json.dumps(getMovie("asu mare"), indent=4, sort_keys=True))
 
 # - /trends/movies
