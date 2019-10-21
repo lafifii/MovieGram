@@ -41,10 +41,19 @@ class MovieGramBot():
         text = update.message.text
         category = user_data['choice']
         del user_data['choice']
-        msj = 'Genial! Entonces buscas la ' + category + ' llamada ' + text
+        msj = 'Genial! Entonces buscas la ' + category + \
+            ' llamada ' + text + '...Encontré esto:\n'
         text = text.replace(' ', '+')
-        print(getMovie(text))
+        if(category == 'Pelicula'):
+            js = getMovie(text)
+            msj += js['title'] + ": " + js["overview"]
+            ph = js['image']
+        elif(category == 'Serie'):
+            js = getMovie(text)
+            msj += js['title'] + ": " + js["overview"]
+            ph = js['image']
         update.message.reply_text(msj, reply_markup=self.markup)
+        update.message.reply_text(ph)
         return CHOOSING
 
     def done(self, update, context):
