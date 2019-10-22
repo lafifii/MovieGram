@@ -85,12 +85,11 @@ def getMovie(name):
 
 
 def getTrendMovies():
-
     path = "/3/trending/movie/week?api_key=" + api_key
     data = GET(path)
     data = generalToTrendMovies(data, img_path)
-
     return data
+
 # print(json.dumps(getTrendMovies(), indent=4, sort_keys=True))
 
 # - /trends/directors

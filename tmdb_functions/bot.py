@@ -1,5 +1,5 @@
 import logging
-from tmdb import getMovie, getSerie, getPeople
+from tmdb import getMovie, getSerie, getPeople, getTrendMovies
 from telegram import ReplyKeyboardMarkup
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters,
                           ConversationHandler)
@@ -16,7 +16,7 @@ class MovieGramBot():
         self.logger = logging.getLogger(__name__)
 
         self.reply_keyboard = [['Serie', 'Pelicula'],
-                               ['Celebridad', 'Proximamente lol'],
+                               ['Celebridad', 'Top Peliculas'],
                                ['Adios']]
 
         self.markup = ReplyKeyboardMarkup(
@@ -60,8 +60,19 @@ class MovieGramBot():
             if(js != None):
                 msj += js['name'] + ", Popularidad: " + str(js["popularity"])
                 ph = js['image']
+        elif(category == 'Top Peliculas'):
+            data = getTrendMovies()
+            for item in data:
+                msj += item['title'] + ": " + item["overview"]
+                ph = item['image']
+                update.message.reply_text(msj, reply_markup=self.markup)
+                update.message.reply_text(ph)
+                msj = ""
+            return CHOOSING
+
         if(js == None):
             msj = 'No se encontro nada'
+
         update.message.reply_text(msj, reply_markup=self.markup)
         update.message.reply_text(ph)
         return CHOOSING
@@ -82,7 +93,7 @@ class MovieGramBot():
             entry_points=[CommandHandler('start', self.start)],
 
             states={
-                CHOOSING: [MessageHandler(Filters.regex('^(Serie|Pelicula|Celebridad)$'),
+                CHOOSING: [MessageHandler(Filters.regex('^(Serie|Pelicula|Celebridad|Top Peliculas)$'),
                                           self.regular_choice)],
 
                 TYPING_CHOICE: [MessageHandler(Filters.text,
