@@ -43,7 +43,7 @@ class MovieGramBot():
         del user_data['choice']
         ph = 'https://indiehoy.com/wp-content/uploads/2018/09/nicolas-cage-meme-640x434.jpg'
         msj = 'Genial! Entonces buscas la ' + category + \
-            ' llamada ' + text + '...Encontré esto:\n'
+            ' llamada ' + text + '...Encontré esto: \n'
         text = text.replace(' ', '+')
         if(category == 'Pelicula'):
             js = getMovie(text)
