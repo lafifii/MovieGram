@@ -1,5 +1,5 @@
 import logging
-from tmdb import getMovie, getSerie, getPeople, getTrendMovies
+from tmdb import getMovie, getSerie, getPeople, getTrendMovies, getTrendSeries
 from telegram import ReplyKeyboardMarkup
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters,
                           ConversationHandler)
@@ -17,7 +17,7 @@ class MovieGramBot():
 
         self.reply_keyboard = [['Serie', 'Pelicula'],
                                ['Celebridad', 'Top Peliculas'],
-                               ['Adios']]
+                               ['Top Series', 'Adios']]
 
         self.markup = ReplyKeyboardMarkup(
             self.reply_keyboard, one_time_keyboard=True)
@@ -32,6 +32,24 @@ class MovieGramBot():
     def regular_choice(self, update, context):
         text = update.message.text
         context.user_data['choice'] = text
+        if(text != 'Pelicula' and text != 'Serie' and text != 'Celebridad'):
+
+            if(text == 'Top Peliculas'):
+                data = getTrendMovies()
+            elif(text == 'Top Series'):
+                data = getTrendSeries()
+
+            ##############
+
+            for item in data:
+                msj += item['title'] + ": " + item["overview"]
+                ph = item['image']
+                update.message.reply_text(msj, reply_markup=self.markup)
+                update.message.reply_text(ph)
+                msj = ""
+
+            return CHOOSING
+
         update.message.reply_text(
             'Por favor dime el nombre de la {} que estas buscando!'.format(text.lower()))
         return TYPING_REPLY
@@ -60,14 +78,6 @@ class MovieGramBot():
             if(js != None):
                 msj += js['name'] + ", Popularidad: " + str(js["popularity"])
                 ph = js['image']
-        elif(category == 'Top Peliculas'):
-            data = getTrendMovies()
-            for item in data:
-                msj += item['title'] + ": " + item["overview"]
-                ph = item['image']
-                update.message.reply_text(msj, reply_markup=self.markup)
-                update.message.reply_text(ph)
-                msj = ""
             return CHOOSING
 
         if(js == None):
@@ -93,7 +103,7 @@ class MovieGramBot():
             entry_points=[CommandHandler('start', self.start)],
 
             states={
-                CHOOSING: [MessageHandler(Filters.regex('^(Serie|Pelicula|Celebridad|Top Peliculas)$'),
+                CHOOSING: [MessageHandler(Filters.regex('^(Serie|Pelicula|Celebridad|Top Peliculas|Top Series)$'),
                                           self.regular_choice)],
 
                 TYPING_CHOICE: [MessageHandler(Filters.text,
