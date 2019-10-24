@@ -47,11 +47,13 @@ class MovieGramBot():
                     update.message.reply_text(item['image'])
             elif(text == 'Top Directores'):
                 data = getTrendDirectors()['results']
-                for js in data:
-                    msj = '{}. Popularidad: {}'.format(
-                        js['name'], js["popularity"])
-                    update.message.reply_text(msj, reply_markup=self.markup)
-                    update.message.reply_text(js['image'])
+                for directors in data:
+                    for js in directors:
+                        msj = '{}. Popularidad: {}'.format(
+                            js['name'], js["popularity"])
+                        update.message.reply_text(
+                            msj, reply_markup=self.markup)
+                        update.message.reply_text(js['image'])
             return CHOOSING
 
         update.message.reply_text(
