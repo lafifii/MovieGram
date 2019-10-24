@@ -41,9 +41,10 @@ class MovieGramBot():
                 else:
                     data = getTrendSeries()
                 for item in data:
-                    msj = '{} Info: {}...Rating: {}'.format(
-                        item['name'], item['info'], item['rating'])
+                    msj = '{} Vote Average: {}'.format(
+                        item['title'], item['vote_average'])
                     update.message.reply_text(msj, reply_markup=self.markup)
+                    update.message.reply_text(item['image'])
             elif(text == 'Top Directores'):
                 data = getTrendDirectors()
                 for direc in data:
