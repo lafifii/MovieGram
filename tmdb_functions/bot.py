@@ -45,6 +45,7 @@ class MovieGramBot():
                         item['title'], item['vote_average'])
                     update.message.reply_text(msj, reply_markup=self.markup)
                     update.message.reply_text(item['image'])
+
             elif(text == 'Top Directores'):
                 data = getTrendDirectors()['results']
                 for directors in data:
