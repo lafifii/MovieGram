@@ -37,24 +37,22 @@ class MovieGramBot():
 
             if(text == 'Top Peliculas' or text == 'Top Series'):
                 if(text == 'Top Peliculas'):
-                    data = getTrendMovies()
+                    data = getTrendMovies()['results']
                 else:
-                    data = getTrendSeries()
+                    data = getTrendSeries()['results']
                 for item in data:
                     msj = '{} Vote Average: {}'.format(
                         item['title'], item['vote_average'])
                     update.message.reply_text(msj, reply_markup=self.markup)
                     update.message.reply_text(item['image'])
             elif(text == 'Top Directores'):
-                data = getTrendDirectors()
+                data = getTrendDirectors()['results']
                 for direc in data:
-                    msj = 'Nombre: {}\nPeliculas: '.format(direc['name'])
-                    for pel in direc['movies']:
-                        msj += '{}, '.format(pel)
-                    msj = msj[:-1]
-
-                update.message.reply_text(msj, reply_markup=self.markup)
-
+                    js = getPeople(direc)
+                    msj = js['name'] + ", Popularidad: " + \
+                        str(js["popularity"])
+                    update.message.reply_text(msj, reply_markup=self.markup)
+                    update.message.reply_text(js['image'])
             return CHOOSING
 
         update.message.reply_text(
