@@ -47,8 +47,7 @@ class MovieGramBot():
                     update.message.reply_text(item['image'])
             elif(text == 'Top Directores'):
                 data = getTrendDirectors()['results']
-                for direc in data:
-                    js = getPeople(direc)
+                for js in data:
                     msj = '{}. Popularidad: {}'.format(
                         js['name'], js["popularity"])
                     update.message.reply_text(msj, reply_markup=self.markup)
@@ -65,8 +64,8 @@ class MovieGramBot():
         category = user_data['choice']
         del user_data['choice']
         ph = 'https://indiehoy.com/wp-content/uploads/2018/09/nicolas-cage-meme-640x434.jpg'
-        msj = 'Genial! Entonces buscas la ' + category +
-        ' llamada ' + text + '...Encontré esto: \n'
+        msj = 'Genial! Entonces buscas la {} llamada {}...Encontre esto:\n'.format(
+            category, text)
         text = text.replace(' ', '+')
         if(category == 'Pelicula'):
             js = getMovie(text)
