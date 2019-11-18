@@ -9,7 +9,6 @@ CHOOSING, TYPING_REPLY, TYPING_CHOICE = range(3)
 
 class MovieGramBot():
     def __init__(self, token):
-        # no nos hackeen porfi t.t
         self.token_ = token
         logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                             level=logging.INFO)
@@ -25,7 +24,7 @@ class MovieGramBot():
 
     def start(self, update, context):
         update.message.reply_text(
-            "Hola! Soy MovieGram bot. Estoy aqui para ayudarte en tus aventuras cinefilas",
+            "Hola! Soy MovieGram bot. Estoy aqui para ayudarte en tus consultas relacionadas al cine, series o celebridades.",
             reply_markup=self.markup)
 
         return CHOOSING
@@ -106,7 +105,7 @@ class MovieGramBot():
         return ConversationHandler.END
 
     def error(self, update, context):
-        self.logger.warning('Update "%s" caused error "%s"',
+        self.logger.warning('Actualizacion "%s" causo un error "%s"',
                             update, context.error)
 
     def run(self):
@@ -141,5 +140,5 @@ class MovieGramBot():
 
 
 if __name__ == '__main__':
-    obj = MovieGramBot('insert_token')
+    obj = MovieGramBot('857019165:AAHkHPXfVU-iw6yb7EP5GOtQzXz4LJ8h03k')
     obj.run()
