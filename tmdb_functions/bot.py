@@ -56,8 +56,15 @@ class MovieGramBot():
                     update.message.reply_text(item['image'])
 
             elif(text == 'Top Directores'):
-                print(json.dumps(getTrendDirectors(), indent=4, sort_keys=True))
-                update.message.reply_text('ola', reply_markup=self.markup)
+                data = getTrendDirectors()['results']
+                for d in data:
+                    s = d[0]['name'] + ", es conocidx por: \n"
+                    for p in d[0]['known_for']:
+                        s+= p + "\n"
+
+                    update.message.reply_text(s, reply_markup=self.markup)
+                    update.message.reply_text(d[0]['image'])
+                
 
             return CHOOSING
 
