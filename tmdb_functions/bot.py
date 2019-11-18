@@ -9,7 +9,6 @@ from flask import Flask
 
 CHOOSING, TYPING_REPLY, TYPING_CHOICE = range(3)
 TOKEN = '857019165:AAHkHPXfVU-iw6yb7EP5GOtQzXz4LJ8h03k'
-BOT_URL = f'https://api.telegram.org/bot{os.environ["{857019165:AAHkHPXfVU-iw6yb7EP5GOtQzXz4LJ8h03k"}]}/'
 app = Flask(__name__)
 
 
@@ -152,5 +151,6 @@ def main():
 
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    server.run(host='0.0.0.0', port=port, debug=True)
+    """port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=True)"""
+    main()
