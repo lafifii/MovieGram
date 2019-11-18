@@ -8,9 +8,9 @@ CHOOSING, TYPING_REPLY, TYPING_CHOICE = range(3)
 
 
 class MovieGramBot():
-    def __init__(self):
+    def __init__(self, token):
         # no nos hackeen porfi t.t
-        self.token_ = '857019165:AAHkHPXfVU-iw6yb7EP5GOtQzXz4LJ8h03k'
+        self.token_ = token
         logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                             level=logging.INFO)
         self.logger = logging.getLogger(__name__)
@@ -18,7 +18,7 @@ class MovieGramBot():
         self.reply_keyboard = [['Serie', 'Pelicula'],
                                ['Celebridad', 'Top Peliculas'],
                                ['Top Peliculas', 'Top Directores'],
-                               ['Top Series', 'Adios']]
+                               ['Top Series']]
 
         self.markup = ReplyKeyboardMarkup(
             self.reply_keyboard, one_time_keyboard=True)
@@ -26,6 +26,13 @@ class MovieGramBot():
     def start(self, update, context):
         update.message.reply_text(
             "Hola! Soy MovieGram bot. Estoy aqui para ayudarte en tus aventuras cinefilas",
+            reply_markup=self.markup)
+
+        return CHOOSING
+
+    def help(self, update, context):
+        update.message.reply_text(
+            "Dale click al teclado de opciones para que veas las cosas que puedo hacer :D",
             reply_markup=self.markup)
 
         return CHOOSING
@@ -107,7 +114,8 @@ class MovieGramBot():
         dp = updater.dispatcher
 
         conv_handler = ConversationHandler(
-            entry_points=[CommandHandler('start', self.start)],
+            entry_points=[CommandHandler(
+                'start', self.start)],
 
             states={
                 CHOOSING: [MessageHandler(Filters.regex('^(Serie|Pelicula|Celebridad|Top Peliculas|Top Series|Top Directores)$'),
@@ -122,7 +130,8 @@ class MovieGramBot():
                                ],
             },
 
-            fallbacks=[MessageHandler(Filters.regex('^Adios$'), self.done)]
+            fallbacks=[CommandHandler(
+                'Adios', self.done), CommandHandler('help', self.help)]
         )
 
         dp.add_handler(conv_handler)
@@ -132,5 +141,5 @@ class MovieGramBot():
 
 
 if __name__ == '__main__':
-    obj = MovieGramBot()
+    obj = MovieGramBot('insert_token')
     obj.run()
