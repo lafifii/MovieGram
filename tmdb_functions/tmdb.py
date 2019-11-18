@@ -124,7 +124,9 @@ def getTrendDirectors():
         data["results"].append(directors)
 
     return data
-# print(json.dumps(getTrendDirectors(), indent=4, sort_keys=True))
+
+
+print(json.dumps(getTrendDirectors(), indent=4, sort_keys=True))
 
 # - /trends/series
 

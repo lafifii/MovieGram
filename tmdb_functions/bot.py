@@ -1,5 +1,6 @@
 import logging
 import os
+import json
 from tmdb import getMovie, getSerie, getActor, getDirector, getTrendMovies, getTrendSeries, getTrendDirectors
 from telegram import ReplyKeyboardMarkup
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters,
@@ -18,7 +19,7 @@ class MovieGramBot():
         self.logger = logging.getLogger(__name__)
 
         self.reply_keyboard = [['Serie', 'Pelicula'],
-                               ['Celebridad', 'Top Peliculas'],
+                               ['Actor', 'Director'],
                                ['Top Peliculas', 'Top Directores'],
                                ['Top Series']]
 
@@ -42,8 +43,7 @@ class MovieGramBot():
     def regular_choice(self, update, context):
         text = update.message.text
         context.user_data['choice'] = text
-        if(text != 'Pelicula' and text != 'Serie' and text != 'Celebridad'):
-
+        if(text != 'Pelicula' and text != 'Serie' and text != 'Actor' and text != 'Director'):
             if(text == 'Top Peliculas' or text == 'Top Series'):
                 if(text == 'Top Peliculas'):
                     data = getTrendMovies()['results']
@@ -56,14 +56,9 @@ class MovieGramBot():
                     update.message.reply_text(item['image'])
 
             elif(text == 'Top Directores'):
-                data = getTrendDirectors()['results']
-                for directors in data:
-                    for js in directors:
-                        msj = '{}. Popularidad: {}'.format(
-                            js['name'], js["popularity"])
-                        update.message.reply_text(
-                            msj, reply_markup=self.markup)
-                        update.message.reply_text(js['image'])
+                print(json.dumps(getTrendDirectors(), indent=4, sort_keys=True))
+                update.message.reply_text('ola', reply_markup=self.markup)
+
             return CHOOSING
 
         update.message.reply_text(
@@ -89,13 +84,18 @@ class MovieGramBot():
             if(js != None):
                 msj += js['title'] + ": " + js["overview"]
                 ph = js['image']
-        elif(category == 'Celebridad'):
+
+        elif(category == 'Actor'):
             js = getActor(text)
             if(js != None):
                 msj += js['name'] + ", Popularidad: " + str(js["popularity"])
                 ph = js['image']
-            return CHOOSING
 
+        elif(category == 'Director'):
+            js = getDirector(text)
+            if(js != None):
+                msj += js['name'] + ", Popularidad: " + str(js["popularity"])
+                ph = js['image']
         if(js == None):
             msj = 'No se encontro nada'
 
@@ -120,7 +120,7 @@ class MovieGramBot():
                 'start', self.start)],
 
             states={
-                CHOOSING: [MessageHandler(Filters.regex('^(Serie|Pelicula|Celebridad|Top Peliculas|Top Series|Top Directores)$'),
+                CHOOSING: [MessageHandler(Filters.regex('^(Serie|Pelicula|Actor|Director|Top Peliculas|Top Series|Top Directores)$'),
                                           self.regular_choice)],
 
                 TYPING_CHOICE: [MessageHandler(Filters.text,
