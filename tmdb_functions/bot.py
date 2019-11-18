@@ -1,6 +1,6 @@
 import logging
 import os
-from tmdb import getMovie, getSerie, getPeople, getTrendMovies, getTrendSeries, getTrendDirectors
+from tmdb import getMovie, getSerie, getActor, getDirector, getTrendMovies, getTrendSeries, getTrendDirectors
 from telegram import ReplyKeyboardMarkup
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters,
                           ConversationHandler)
@@ -90,7 +90,7 @@ class MovieGramBot():
                 msj += js['title'] + ": " + js["overview"]
                 ph = js['image']
         elif(category == 'Celebridad'):
-            js = getPeople(text)
+            js = getActor(text)
             if(js != None):
                 msj += js['name'] + ", Popularidad: " + str(js["popularity"])
                 ph = js['image']
