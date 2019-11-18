@@ -1,10 +1,15 @@
 import logging
+import os
 from tmdb import getMovie, getSerie, getPeople, getTrendMovies, getTrendSeries, getTrendDirectors
 from telegram import ReplyKeyboardMarkup
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters,
                           ConversationHandler)
 
+from flask import Flask
+
 CHOOSING, TYPING_REPLY, TYPING_CHOICE = range(3)
+TOKEN = '857019165:AAHkHPXfVU-iw6yb7EP5GOtQzXz4LJ8h03k'
+server = Flask(__name__)
 
 
 class MovieGramBot():
@@ -140,5 +145,5 @@ class MovieGramBot():
 
 
 if __name__ == '__main__':
-    obj = MovieGramBot('857019165:AAHkHPXfVU-iw6yb7EP5GOtQzXz4LJ8h03k')
+    obj = MovieGramBot(TOKEN)
     obj.run()
