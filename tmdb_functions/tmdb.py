@@ -23,6 +23,7 @@ payload = "{}"
 def printJson(data):
     print(json.dumps(data, indent=4, sort_keys=True))
 
+
 def GET(path):
 
     conn.request("GET", path, payload)
@@ -33,6 +34,8 @@ def GET(path):
     return data
 
 # - /actor/{name} & /director/{name}
+
+
 def getPeople(name):
 
     path = "/3/search/person?api_key=" + api_key
@@ -47,11 +50,14 @@ def getPeople(name):
 
     return data
 
+
 getDirector = getActor = getPeople
-# print(json.dumps(getActor("robert downey"), indent=4, sort_keys=True))
+print(json.dumps(getActor("robert downey"), indent=4, sort_keys=True))
 # print(json.dumps(getDirector("christopher nolan"), indent=4, sort_keys=True))
 
 # - /serie/{name}
+
+
 def getSerie(name):
 
     path = "/3/search/tv?api_key=" + api_key
@@ -67,6 +73,8 @@ def getSerie(name):
 # print(json.dumps(getSerie("bob esponja"), indent=4, sort_keys=True))
 
 # - /movie/{name}
+
+
 def getMovie(name):
     path = "/3/search/movie?api_key=" + api_key
     path += "&language=" + language + "&query=" + name
@@ -81,6 +89,8 @@ def getMovie(name):
 # print(json.dumps(getMovie("asu mare"), indent=4, sort_keys=True))
 
 # - /trends/movies
+
+
 def getTrendMovies():
     path = "/3/trending/movie/week?api_key=" + api_key
 
@@ -94,6 +104,8 @@ def getTrendMovies():
 # print(json.dumps(getTrendMovies(), indent=4, sort_keys=True))
 
 # - /trends/directors
+
+
 def getTrendDirectors():
 
     tMovies = getTrendMovies()
@@ -103,7 +115,7 @@ def getTrendDirectors():
 
         path = "/3/movie/" + str(movie["id"])
         path += "/credits?api_key=" + api_key
-        
+
         content = GET(path)
         content = generalToTrendDirectors(content)
 
@@ -115,6 +127,8 @@ def getTrendDirectors():
 # print(json.dumps(getTrendDirectors(), indent=4, sort_keys=True))
 
 # - /trends/series
+
+
 def getTrendSeries():
 
     path = "/3/trending/tv/week?api_key=" + api_key
@@ -128,10 +142,12 @@ def getTrendSeries():
 # print(json.dumps(getTrendSeries(), indent=4, sort_keys=True))
 
 # - /rating/movie/{name}
+
+
 def getRatingMovie(name):
     path = "/3/search/movie?api_key=" + api_key
     path += "&language=" + language + "&query=" + name
-    
+
     try:
         data = GET(path)
         data = generalToRatingMovie(data)
@@ -145,21 +161,24 @@ def getRatingMovie(name):
 # - /rating/short/{name}
 
 # - /reception/movie/{name}
+
+
 def getReviewMovie(name):
-    
+
     try:
         movieId = str(getMovie(name)['id'])
     except:
         return None
-    
-    path = '/3/movie/' + movieId + '/reviews?api_key=' + api_key + '&language=en-US&page=1'
-    
+
+    path = '/3/movie/' + movieId + '/reviews?api_key=' + \
+        api_key + '&language=en-US&page=1'
+
     try:
         data = GET(path)
         data = generalReviewMovie(data)
     except:
         return None
-    
+
     return data
 # print(json.dumps(getReviewMovie('avengers'), indent=4, sort_keys=True))
 
