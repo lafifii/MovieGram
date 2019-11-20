@@ -127,7 +127,7 @@ class MovieGramBot():
                               port=PORT,
                               url_path=TOKEN)
 
-        updater.bot.setWebhook("https://herokuappname.herokuapp.com/" + TOKEN)
+        updater.bot.setWebhook("https://moviegrambot.herokuapp.com/" + TOKEN)
         dp = updater.dispatcher
 
         conv_handler = ConversationHandler(
