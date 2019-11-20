@@ -1,14 +1,18 @@
+from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters,
+                          ConversationHandler)
 import logging
 import os
 import json
 from tmdb import getMovie, getSerie, getActor, getDirector, getTrendMovies, getTrendSeries, getTrendDirectors
 from telegram import ReplyKeyboardMarkup
-from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters,
-                          ConversationHandler)
+from flask import Flask
+
+app = Flask(__name__)
 
 
 CHOOSING, TYPING_REPLY, TYPING_CHOICE = range(3)
 TOKEN = '857019165:AAHkHPXfVU-iw6yb7EP5GOtQzXz4LJ8h03k'
+PORT = int(os.environ.get('PORT', '5000'))
 
 
 class MovieGramBot():
@@ -60,11 +64,10 @@ class MovieGramBot():
                 for d in data:
                     s = d[0]['name'] + ", es conocidx por: \n"
                     for p in d[0]['known_for']:
-                        s+= p + "\n"
+                        s += p + "\n"
 
                     update.message.reply_text(s, reply_markup=self.markup)
                     update.message.reply_text(d[0]['image'])
-                
 
             return CHOOSING
 
@@ -120,6 +123,11 @@ class MovieGramBot():
 
     def run(self):
         updater = Updater(self.token_, use_context=True)
+        updater.start_webhook(listen="127.0.0.1",
+                              port=PORT,
+                              url_path=TOKEN)
+
+        updater.bot.setWebhook("https://herokuappname.herokuapp.com/" + TOKEN)
         dp = updater.dispatcher
 
         conv_handler = ConversationHandler(
@@ -149,10 +157,11 @@ class MovieGramBot():
         updater.idle()
 
 
+@app.route("/")
 def main():
     obj = MovieGramBot(TOKEN)
     obj.run()
 
 
 if __name__ == '__main__':
-    main()
+    app.run(debug=False)
