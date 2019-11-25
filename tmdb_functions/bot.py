@@ -1,18 +1,15 @@
+import logging
+import json
+import configuration
+
+
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters,
                           ConversationHandler)
-import logging
-import os
-import json
 from tmdb import getMovie, getSerie, getActor, getDirector, getTrendMovies, getTrendSeries, getTrendDirectors
 from telegram import ReplyKeyboardMarkup
 from flask import Flask
 
 app = Flask(__name__)
-
-
-CHOOSING, TYPING_REPLY, TYPING_CHOICE = range(3)
-TOKEN = '857019165:AAHkHPXfVU-iw6yb7EP5GOtQzXz4LJ8h03k'
-PORT = int(os.environ.get('PORT', '5000'))
 
 
 class MovieGramBot():
@@ -22,27 +19,22 @@ class MovieGramBot():
                             level=logging.INFO)
         self.logger = logging.getLogger(__name__)
 
-        self.reply_keyboard = [['Serie', 'Pelicula'],
-                               ['Actor', 'Director'],
-                               ['Top Peliculas', 'Top Directores'],
-                               ['Top Series']]
+        self.reply_keyboard = configuration.OPTIONS_KEYBOARD
 
         self.markup = ReplyKeyboardMarkup(
             self.reply_keyboard, one_time_keyboard=True)
 
     def start(self, update, context):
-        update.message.reply_text(
-            "Hola! Soy MovieGram bot. Estoy aqui para ayudarte en tus consultas relacionadas al cine, series o celebridades.",
-            reply_markup=self.markup)
+        update.message.reply_text(configuration.WELCOME_MESSAGE,
+                                  reply_markup=self.markup)
 
-        return CHOOSING
+        return configuration.CHOOSING
 
     def help(self, update, context):
-        update.message.reply_text(
-            "Dale click al teclado de opciones para que veas las cosas que puedo hacer :D",
-            reply_markup=self.markup)
+        update.message.reply_text(configuration.HELP_MESSAGE,
+                                  reply_markup=self.markup)
 
-        return CHOOSING
+        return configuration.CHOOSING
 
     def regular_choice(self, update, context):
         text = update.message.text
@@ -50,68 +42,44 @@ class MovieGramBot():
         if(text != 'Pelicula' and text != 'Serie' and text != 'Actor' and text != 'Director'):
             if(text == 'Top Peliculas' or text == 'Top Series'):
                 if(text == 'Top Peliculas'):
-                    data = getTrendMovies()['results']
+                    self.toppeliculas(update)
                 else:
-                    data = getTrendSeries()['results']
-                for item in data:
-                    msj = '{} Vote Average: {}'.format(
-                        item['title'], item['vote_average'])
-                    update.message.reply_text(msj, reply_markup=self.markup)
-                    update.message.reply_text(item['image'])
-
+                    self.topseries(update)
             elif(text == 'Top Directores'):
-                data = getTrendDirectors()['results']
-                for d in data:
-                    s = d[0]['name'] + ", es conocidx por: \n"
-                    for p in d[0]['known_for']:
-                        s += p + "\n"
-
-                    update.message.reply_text(s, reply_markup=self.markup)
-                    update.message.reply_text(d[0]['image'])
-
-            return CHOOSING
+                self.topdirectores(update)
+            return configuration.CHOOSING
 
         update.message.reply_text(
-            'Por favor dime el nombre de la {} que estas buscando!'.format(text.lower()))
-        return TYPING_REPLY
+            configuration.REPLY_MESSAGE.format(text.lower()))
+        return configuration.TYPING_REPLY
 
     def received_information(self, update, context):
+        # information
         user_data = context.user_data
         text = update.message.text
         category = user_data['choice']
         del user_data['choice']
-        ph = 'https://indiehoy.com/wp-content/uploads/2018/09/nicolas-cage-meme-640x434.jpg'
-        msj = 'Genial! Entonces buscas la {} llamada {}...Encontre esto:\n'.format(
+        photo = configuration.NOTHING
+        message = configuration.REPLY_MESSAGE_FOUND.format(
             category, text)
         text = text.replace(' ', '+')
+
+        # answer
         if(category == 'Pelicula'):
-            js = getMovie(text)
-            if(js != None):
-                msj += js['title'] + ": " + js["overview"]
-                ph = js['image']
+            js, message, photo = self.getpelicula(text, message)
         elif(category == 'Serie'):
-            js = getSerie(text)
-            if(js != None):
-                msj += js['title'] + ": " + js["overview"]
-                ph = js['image']
-
+            js, message, photo = self.getserie(text, message)
         elif(category == 'Actor'):
-            js = getActor(text)
-            if(js != None):
-                msj += js['name'] + ", Popularidad: " + str(js["popularity"])
-                ph = js['image']
-
+            js, message, photo = self.getactor(text, message)
         elif(category == 'Director'):
-            js = getDirector(text)
-            if(js != None):
-                msj += js['name'] + ", Popularidad: " + str(js["popularity"])
-                ph = js['image']
-        if(js == None):
-            msj = 'No se encontro nada'
+            js, message, photo = self.getdirector(text, message)
 
-        update.message.reply_text(msj, reply_markup=self.markup)
-        update.message.reply_text(ph)
-        return CHOOSING
+        if(js == None):
+            message = 'No se encontro nada'
+
+        update.message.reply_text(message, reply_markup=self.markup)
+        update.message.reply_text(photo)
+        return configuration.CHOOSING
 
     def done(self, update, context):
         update.message.reply_text("Espero haberte ayudado, hasta luego")
@@ -124,10 +92,10 @@ class MovieGramBot():
     def run(self):
         updater = Updater(self.token_, use_context=True)
         updater.start_webhook(listen="127.0.0.1",
-                              port=PORT,
-                              url_path=TOKEN)
+                              port=configuration.PORT,
+                              url_path=configuration.TOKEN)
 
-        updater.bot.setWebhook("https://moviegrambot.herokuapp.com/" + TOKEN)
+        updater.bot.setWebhook(configuration.WEBHOOK + configuration.TOKEN)
         dp = updater.dispatcher
 
         conv_handler = ConversationHandler(
@@ -135,16 +103,16 @@ class MovieGramBot():
                 'start', self.start)],
 
             states={
-                CHOOSING: [MessageHandler(Filters.regex('^(Serie|Pelicula|Actor|Director|Top Peliculas|Top Series|Top Directores)$'),
-                                          self.regular_choice)],
+                configuration.CHOOSING: [MessageHandler(Filters.regex(configuration.OPTIONS),
+                                                        self.regular_choice)],
 
-                TYPING_CHOICE: [MessageHandler(Filters.text,
-                                               self.regular_choice)
-                                ],
+                configuration.TYPING_CHOICE: [MessageHandler(Filters.text,
+                                                             self.regular_choice)
+                                              ],
 
-                TYPING_REPLY: [MessageHandler(Filters.text,
-                                              self.received_information),
-                               ],
+                configuration.TYPING_REPLY: [MessageHandler(Filters.text,
+                                                            self.received_information),
+                                             ],
             },
 
             fallbacks=[CommandHandler(
@@ -156,10 +124,66 @@ class MovieGramBot():
         updater.start_polling()
         updater.idle()
 
+    def toppeliculas(self, update):
+        data = getTrendMovies()['results']
+        for item in data:
+            msj = '{} Vote Average: {}'.format(
+                item['title'], item['vote_average'])
+            update.message.reply_text(msj, reply_markup=self.markup)
+            update.message.reply_text(item['image'])
+
+    def getpelicula(self, text, msj):
+        js = getMovie(text)
+        if(js != None):
+            msj += js['title'] + ": " + js["overview"]
+            ph = js['image']
+
+        return js, msj, ph
+
+    def getdirector(self, text, msj):
+        js = getDirector(text)
+        if(js != None):
+            msj += js['name'] + ", Popularidad: " + str(js["popularity"])
+            ph = js['image']
+        return js, msj, ph
+
+    def getactor(self, text, msj):
+        js = getActor(text)
+        if(js != None):
+            msj += js['name'] + ", Popularidad: " + str(js["popularity"])
+            ph = js['image']
+        return js, msj, ph
+
+    def getserie(self, text, msj):
+        js = getSerie(text)
+        if(js != None):
+            msj += js['title'] + ": " + js["overview"]
+            ph = js['image']
+
+        return js, msj, ph
+
+    def topseries(self, update):
+        data = getTrendSeries()['results']
+        for item in data:
+            msj = '{} Vote Average: {}'.format(
+                item['title'], item['vote_average'])
+            update.message.reply_text(msj, reply_markup=self.markup)
+            update.message.reply_text(item['image'])
+
+    def topdirectores(self, update):
+        data = getTrendDirectors()['results']
+        for d in data:
+            s = d[0]['name'] + ", es conocidx por: \n"
+            for p in d[0]['known_for']:
+                s += p + "\n"
+
+            update.message.reply_text(s, reply_markup=self.markup)
+            update.message.reply_text(d[0]['image'])
+
 
 @app.route("/")
 def main():
-    obj = MovieGramBot(TOKEN)
+    obj = MovieGramBot(configuration.TOKEN)
     obj.run()
 
 
